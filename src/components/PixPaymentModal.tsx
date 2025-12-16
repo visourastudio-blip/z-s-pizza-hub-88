@@ -3,9 +3,10 @@ import { Dialog, DialogContent, DialogHeader, DialogTitle } from '@/components/u
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
-import { Loader2, QrCode, Copy, Check } from 'lucide-react';
+import { Loader2, QrCode, Copy, Check, ExternalLink } from 'lucide-react';
 import { toast } from 'sonner';
 import { supabase } from '@/integrations/supabase/client';
+import { QRCodeSVG } from 'qrcode.react';
 
 interface PixPaymentModalProps {
   open: boolean;
@@ -18,9 +19,7 @@ interface PixPaymentModalProps {
 }
 
 interface PixData {
-  qrCode?: string;
-  qrCodeImage?: string;
-  copyPaste?: string;
+  billingId?: string;
   url?: string;
 }
 
@@ -87,11 +86,9 @@ const PixPaymentModal = ({
 
       if (error) throw error;
 
-      if (data?.success) {
+      if (data?.success && data?.url) {
         setPixData({
-          qrCode: data.qrCode,
-          qrCodeImage: data.qrCodeImage,
-          copyPaste: data.copyPaste,
+          billingId: data.billingId,
           url: data.url,
         });
         toast.success('QR Code gerado com sucesso!');
@@ -107,10 +104,10 @@ const PixPaymentModal = ({
   };
 
   const handleCopyPix = async () => {
-    if (pixData?.copyPaste) {
-      await navigator.clipboard.writeText(pixData.copyPaste);
+    if (pixData?.url) {
+      await navigator.clipboard.writeText(pixData.url);
       setCopied(true);
-      toast.success('Código PIX copiado!');
+      toast.success('Link de pagamento copiado!');
       setTimeout(() => setCopied(false), 3000);
     }
   };
@@ -219,12 +216,15 @@ const PixPaymentModal = ({
         ) : (
           <div className="space-y-4">
             <div className="flex flex-col items-center space-y-4">
-              {pixData.qrCodeImage ? (
-                <img
-                  src={pixData.qrCodeImage}
-                  alt="QR Code PIX"
-                  className="w-48 h-48 rounded-lg border"
-                />
+              {pixData.url ? (
+                <div className="bg-white p-4 rounded-lg">
+                  <QRCodeSVG
+                    value={pixData.url}
+                    size={192}
+                    level="H"
+                    includeMargin={false}
+                  />
+                </div>
               ) : (
                 <div className="w-48 h-48 bg-muted rounded-lg flex items-center justify-center">
                   <QrCode className="h-16 w-16 text-muted-foreground" />
@@ -232,27 +232,37 @@ const PixPaymentModal = ({
               )}
 
               <p className="text-center text-sm text-muted-foreground">
-                Escaneie o QR Code ou copie o código para pagar
+                Escaneie o QR Code ou clique no link para pagar
               </p>
 
-              {pixData.copyPaste && (
-                <Button
-                  variant="outline"
-                  onClick={handleCopyPix}
-                  className="w-full"
-                >
-                  {copied ? (
-                    <>
-                      <Check className="mr-2 h-4 w-4 text-green-500" />
-                      Copiado!
-                    </>
-                  ) : (
-                    <>
-                      <Copy className="mr-2 h-4 w-4" />
-                      Copiar código PIX
-                    </>
-                  )}
-                </Button>
+              {pixData.url && (
+                <div className="flex flex-col gap-2 w-full">
+                  <Button
+                    variant="outline"
+                    onClick={handleCopyPix}
+                    className="w-full"
+                  >
+                    {copied ? (
+                      <>
+                        <Check className="mr-2 h-4 w-4 text-green-500" />
+                        Copiado!
+                      </>
+                    ) : (
+                      <>
+                        <Copy className="mr-2 h-4 w-4" />
+                        Copiar link de pagamento
+                      </>
+                    )}
+                  </Button>
+                  <Button
+                    variant="secondary"
+                    onClick={() => window.open(pixData.url, '_blank')}
+                    className="w-full"
+                  >
+                    <ExternalLink className="mr-2 h-4 w-4" />
+                    Abrir página de pagamento
+                  </Button>
+                </div>
               )}
             </div>
 
