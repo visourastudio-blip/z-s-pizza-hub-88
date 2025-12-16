@@ -139,12 +139,24 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
       return { success: false, message: error.message };
     }
 
-    // Update profile with phone
+    // Create or update profile with phone
     if (data.user) {
-      await supabase
+      // Try upsert to handle cases where trigger didn't create profile
+      const { error: profileError } = await supabase
         .from('profiles')
-        .update({ phone, name })
-        .eq('id', data.user.id);
+        .upsert({
+          id: data.user.id,
+          name,
+          email,
+          phone,
+        }, { onConflict: 'id' });
+
+      if (profileError) {
+        console.error('Error creating profile:', profileError);
+      }
+
+      // Fetch profile after creation
+      await fetchProfile(data.user.id);
     }
 
     return { success: true, message: 'Cadastro realizado com sucesso!' };
