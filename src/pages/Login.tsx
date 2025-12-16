@@ -152,15 +152,6 @@ const Login = () => {
                   </Button>
                 </form>
 
-                <div className="mt-4 p-4 bg-muted rounded-lg">
-                  <p className="text-xs text-muted-foreground text-center mb-2">
-                    <strong>Login do Funcionário:</strong>
-                  </p>
-                  <p className="text-xs text-muted-foreground text-center">
-                    Email: visourastudio@gmail.com<br />
-                    Senha: 123456
-                  </p>
-                </div>
               </TabsContent>
 
               {/* Register Tab */}
