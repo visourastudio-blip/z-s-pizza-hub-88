@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
-import { ShoppingCart, User, Menu, X, LogOut, ClipboardList, Star } from 'lucide-react';
+import { ShoppingCart, User, Menu, X, LogOut, ClipboardList, Star, UtensilsCrossed } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Badge } from '@/components/ui/badge';
 import { Sheet, SheetContent, SheetTrigger } from '@/components/ui/sheet';
@@ -106,6 +106,10 @@ export function Header() {
                     <DropdownMenuItem onClick={() => navigate('/funcionario')}>
                       <ClipboardList className="mr-2 h-4 w-4" />
                       Painel de Controle
+                    </DropdownMenuItem>
+                    <DropdownMenuItem onClick={() => navigate('/cardapio')}>
+                      <UtensilsCrossed className="mr-2 h-4 w-4" />
+                      Cardápio
                     </DropdownMenuItem>
                     <DropdownMenuItem onClick={() => navigate('/avaliacoes')}>
                       <Star className="mr-2 h-4 w-4" />
