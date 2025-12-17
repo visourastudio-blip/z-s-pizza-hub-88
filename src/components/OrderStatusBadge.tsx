@@ -1,6 +1,6 @@
 import { Badge } from '@/components/ui/badge';
 import { OrderStatus } from '@/types';
-import { Clock, ChefHat, Package, Truck, CheckCircle } from 'lucide-react';
+import { Clock, ChefHat, Package, Truck, CheckCircle, CreditCard } from 'lucide-react';
 
 interface OrderStatusBadgeProps {
   status: OrderStatus;
@@ -8,6 +8,11 @@ interface OrderStatusBadgeProps {
 }
 
 const statusConfig: Record<OrderStatus, { label: string; icon: any; className: string }> = {
+  aguardando_pagamento: {
+    label: 'Aguardando Pagamento',
+    icon: CreditCard,
+    className: 'bg-amber-500/20 text-amber-600 border-amber-500/30',
+  },
   recebido: {
     label: 'Pedido Recebido',
     icon: Clock,

@@ -82,6 +82,7 @@ export interface Order {
 }
 
 export type OrderStatus = 
+  | 'aguardando_pagamento'
   | 'recebido' 
   | 'em_preparo' 
   | 'pronto_retirada' 

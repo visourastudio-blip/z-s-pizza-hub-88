@@ -16,6 +16,7 @@ export type Database = {
     Tables: {
       orders: {
         Row: {
+          billing_id: string | null
           change: number | null
           created_at: string
           delivery_type: string
@@ -28,6 +29,7 @@ export type Database = {
           user_id: string
         }
         Insert: {
+          billing_id?: string | null
           change?: number | null
           created_at?: string
           delivery_type: string
@@ -40,6 +42,7 @@ export type Database = {
           user_id: string
         }
         Update: {
+          billing_id?: string | null
           change?: number | null
           created_at?: string
           delivery_type?: string
