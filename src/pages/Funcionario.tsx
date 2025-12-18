@@ -30,15 +30,19 @@ const Funcionario = () => {
   const [refreshKey, setRefreshKey] = useState(0);
   const orders = getAllOrders();
 
-  const activeOrders = orders.filter(o => 
-    !['entregue', 'pronto_retirada'].includes(o.status) || 
-    (o.status === 'pronto_retirada' && o.deliveryType === 'retirada')
-  ).filter(o => o.status !== 'entregue');
+  const activeOrders = orders.filter(o => {
+    if (o.deliveryType === 'retirada') {
+      return o.status !== 'pronto_retirada';
+    }
+    return o.status !== 'entregue';
+  });
 
-  const completedOrders = orders.filter(o => 
-    o.status === 'entregue' || 
-    (o.status === 'pronto_retirada' && o.deliveryType === 'retirada')
-  );
+  const completedOrders = orders.filter(o => {
+    if (o.deliveryType === 'retirada') {
+      return o.status === 'pronto_retirada';
+    }
+    return o.status === 'entregue';
+  });
 
   const handleStatusChange = (orderId: string, status: OrderStatus) => {
     updateOrderStatus(orderId, status);
