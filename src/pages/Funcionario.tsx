@@ -1,6 +1,6 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { Clock, ChefHat, Package, Truck, CheckCircle, RefreshCw, LogOut } from 'lucide-react';
+import { Clock, ChefHat, Package, Truck, CheckCircle, RefreshCw, LogOut, Power } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { Badge } from '@/components/ui/badge';
@@ -9,11 +9,11 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from '@/components/ui/tabs';
 import { OrderStatusBadge } from '@/components/OrderStatusBadge';
 import { useOrders } from '@/contexts/OrderContext';
 import { useAuth } from '@/contexts/AuthContext';
+import { useRestaurantStatus } from '@/hooks/useRestaurantStatus';
 import { OrderStatus } from '@/types';
 import { sizeLabels } from '@/data/menuData';
 import { toast } from 'sonner';
 import pizzariaLogo from '@/assets/pizzaria-logo.png';
-
 const statusOptions: { value: OrderStatus; label: string }[] = [
   { value: 'recebido', label: 'Pedido Recebido' },
   { value: 'em_preparo', label: 'Em Preparo' },
@@ -26,8 +26,8 @@ const Funcionario = () => {
   const navigate = useNavigate();
   const { getAllOrders, updateOrderStatus } = useOrders();
   const { user, isEmployee, logout } = useAuth();
+  const { isOpen, toggleStatus } = useRestaurantStatus();
   const [refreshKey, setRefreshKey] = useState(0);
-
   const orders = getAllOrders();
 
   const activeOrders = orders.filter(o => 
@@ -56,6 +56,14 @@ const Funcionario = () => {
     toast.success('Atualizado!');
   };
 
+  const handleToggleRestaurant = async () => {
+    const success = await toggleStatus();
+    if (success) {
+      toast.success(isOpen ? 'Restaurante fechado!' : 'Restaurante aberto!');
+    } else {
+      toast.error('Erro ao alterar status');
+    }
+  };
   // Check if user is employee
   if (!isEmployee) {
     navigate('/');
@@ -76,6 +84,14 @@ const Funcionario = () => {
               </div>
             </div>
             <div className="flex items-center gap-2">
+              <Button
+                variant={isOpen ? 'destructive' : 'default'}
+                onClick={handleToggleRestaurant}
+                className="gap-2"
+              >
+                <Power className="h-4 w-4" />
+                {isOpen ? 'Fechar Restaurante' : 'Abrir Restaurante'}
+              </Button>
               <Button variant="outline" size="icon" onClick={handleRefresh}>
                 <RefreshCw className="h-4 w-4" />
               </Button>

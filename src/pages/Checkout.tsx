@@ -1,19 +1,20 @@
 import { useState } from 'react';
 import { useNavigate } from 'react-router-dom';
-import { ArrowLeft, MapPin, Truck, Store, CreditCard, Banknote, QrCode, Wallet } from 'lucide-react';
+import { ArrowLeft, MapPin, Truck, Store, CreditCard, Banknote, QrCode, Wallet, AlertTriangle } from 'lucide-react';
 import { Button } from '@/components/ui/button';
 import { Input } from '@/components/ui/input';
 import { Label } from '@/components/ui/label';
 import { Card, CardContent, CardHeader, CardTitle } from '@/components/ui/card';
 import { RadioGroup, RadioGroupItem } from '@/components/ui/radio-group';
 import { Separator } from '@/components/ui/separator';
+import { Alert, AlertDescription, AlertTitle } from '@/components/ui/alert';
 import { useCart } from '@/contexts/CartContext';
 import { useAuth } from '@/contexts/AuthContext';
 import { useOrders } from '@/contexts/OrderContext';
+import { useRestaurantStatus } from '@/hooks/useRestaurantStatus';
 import { toast } from 'sonner';
 import { Address } from '@/types';
 import PixPaymentModal from '@/components/PixPaymentModal';
-
 const DELIVERY_FEE = 8;
 
 const Checkout = () => {
@@ -21,7 +22,7 @@ const Checkout = () => {
   const { items, getTotal, clearCart } = useCart();
   const { user, profile, updateAddress } = useAuth();
   const { createOrder } = useOrders();
-
+  const { isOpen: isRestaurantOpen, loading: loadingStatus } = useRestaurantStatus();
   const [deliveryType, setDeliveryType] = useState<'delivery' | 'retirada'>('delivery');
   const [paymentMethod, setPaymentMethod] = useState<'pix' | 'credito' | 'debito' | 'dinheiro'>('pix');
   const [changeAmount, setChangeAmount] = useState('');
@@ -133,6 +134,16 @@ const Checkout = () => {
             </p>
           </div>
         </div>
+
+        {!loadingStatus && !isRestaurantOpen && (
+          <Alert variant="destructive" className="mb-6">
+            <AlertTriangle className="h-4 w-4" />
+            <AlertTitle>Restaurante Fechado</AlertTitle>
+            <AlertDescription>
+              No momento não estamos aceitando pedidos. Por favor, tente novamente mais tarde.
+            </AlertDescription>
+          </Alert>
+        )}
 
         <form onSubmit={handleSubmit}>
           <div className="grid lg:grid-cols-3 gap-8">
@@ -377,8 +388,13 @@ const Checkout = () => {
                     <span className="text-primary">R$ {total.toFixed(2).replace('.', ',')}</span>
                   </div>
 
-                  <Button type="submit" className="w-full" size="lg" disabled={isProcessing}>
-                    {isProcessing ? 'Processando...' : 'Confirmar Pedido'}
+                  <Button 
+                    type="submit" 
+                    className="w-full" 
+                    size="lg" 
+                    disabled={isProcessing || !isRestaurantOpen}
+                  >
+                    {isProcessing ? 'Processando...' : !isRestaurantOpen ? 'Restaurante Fechado' : 'Confirmar Pedido'}
                   </Button>
                 </CardContent>
               </Card>

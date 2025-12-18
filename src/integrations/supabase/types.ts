@@ -101,6 +101,27 @@ export type Database = {
         }
         Relationships: []
       }
+      restaurant_settings: {
+        Row: {
+          id: string
+          is_open: boolean
+          updated_at: string
+          updated_by: string | null
+        }
+        Insert: {
+          id?: string
+          is_open?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Update: {
+          id?: string
+          is_open?: boolean
+          updated_at?: string
+          updated_by?: string | null
+        }
+        Relationships: []
+      }
       reviews: {
         Row: {
           comment: string
